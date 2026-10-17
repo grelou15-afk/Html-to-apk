@@ -1,0 +1,128 @@
+name: Fabriquer l'APK
+
+on:
+  push:
+    paths:
+      - 'project/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Preparer le projet Android
+        run: |
+          python3 - <<'PY'
+          import json, os, re, shutil, subprocess
+
+          def run(cmd):
+              subprocess.run(cmd, shell=True, check=True)
+
+          spec = json.load(open('project/spec.json', encoding='utf-8'))
+          name = spec['name']
+          pkg = spec['package']
+
+          os.makedirs('www', exist_ok=True)
+          shutil.copy('project/index.html', 'www/index.html')
+
+          json.dump({
+              "appId": pkg,
+              "appName": name,
+              "webDir": "www",
+              "android": {"allowMixedContent": True}
+          }, open('capacitor.config.json', 'w', encoding='utf-8'))
+
+          json.dump({
+              "name": "app", "version": "1.0.0", "private": True,
+              "dependencies": {"@capacitor/core": "6.2.0", "@capacitor/android": "6.2.0"},
+              "devDependencies": {"@capacitor/cli": "6.2.0"}
+          }, open('package.json', 'w'))
+
+          run('npm install')
+          run('npx cap add android')
+
+          # Autorisations et orientation
+          mf = 'android/app/src/main/AndroidManifest.xml'
+          t = open(mf, encoding='utf-8').read()
+          perms = [p for p in dict.fromkeys(spec.get('permissions', [])) if p != 'INTERNET']
+          lines = ''.join('    <uses-permission android:name="android.permission.%s" />\n' % p for p in perms)
+          t = t.replace('</manifest>', lines + '</manifest>')
+          orient = {'portrait': 'portrait', 'landscape': 'landscape'}.get(spec.get('orientation'))
+          if orient:
+              t = t.replace('<activity', '<activity android:screenOrientation="%s"' % orient, 1)
+          open(mf, 'w', encoding='utf-8').write(t)
+
+          # Plein ecran et ecran allume
+          java = '''package @@PKG@@;
+
+          import android.os.Bundle;
+          import android.view.WindowManager;
+          import androidx.core.view.WindowCompat;
+          import androidx.core.view.WindowInsetsCompat;
+          import androidx.core.view.WindowInsetsControllerCompat;
+          import com.getcapacitor.BridgeActivity;
+
+          public class MainActivity extends BridgeActivity {
+              @Override
+              public void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+                  if (@@KEEP@@) {
+                      getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                  }
+                  if (@@FULL@@) {
+                      WindowInsetsControllerCompat c = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+                      c.hide(WindowInsetsCompat.Type.systemBars());
+                      c.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+                  }
+              }
+          }
+          '''
+          java = java.replace('@@PKG@@', pkg)
+          java = java.replace('@@KEEP@@', 'true' if spec.get('keepScreenOn') else 'false')
+          java = java.replace('@@FULL@@', 'true' if spec.get('fullscreen') else 'false')
+          jdir = 'android/app/src/main/java/' + pkg.replace('.', '/')
+          os.makedirs(jdir, exist_ok=True)
+          open(jdir + '/MainActivity.java', 'w', encoding='utf-8').write(java)
+
+          # Icone
+          if os.path.exists('project/icon.png'):
+              run('pip install pillow -q')
+              from PIL import Image
+              res = 'android/app/src/main/res'
+              shutil.rmtree(res + '/mipmap-anydpi-v26', ignore_errors=True)
+              im = Image.open('project/icon.png').convert('RGBA')
+              for d, s in {'mdpi': 48, 'hdpi': 72, 'xhdpi': 96, 'xxhdpi': 144, 'xxxhdpi': 192}.items():
+                  folder = res + '/mipmap-' + d
+                  os.makedirs(folder, exist_ok=True)
+                  for f in os.listdir(folder):
+                      os.remove(folder + '/' + f)
+                  small = im.resize((s, s))
+                  small.save(folder + '/ic_launcher.png')
+                  small.save(folder + '/ic_launcher_round.png')
+          PY
+
+      - name: Construire l'APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mon-application-apk
+          path: android/app/build/outputs/apk/debug/*.apk
