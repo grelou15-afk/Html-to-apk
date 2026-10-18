@@ -1,6 +1,6 @@
 {
-  "name": "Deutsch Meister v3",
-  "package": "com.htmltoapk.app.deutschmeisterv3",
+  "name": "Polyglotte Meister",
+  "package": "com.htmltoapk.app.polyglottemeister",
   "orientation": "auto",
   "fullscreen": true,
   "keepScreenOn": true,
