@@ -1,6 +1,6 @@
 {
-  "name": "Polyglotte Meister",
-  "package": "com.htmltoapk.app.polyglottemeister",
+  "name": "Atelier de formulation",
+  "package": "com.htmltoapk.app.atelierdeformulation",
   "orientation": "auto",
   "fullscreen": true,
   "keepScreenOn": true,
@@ -14,8 +14,10 @@
     "POST_NOTIFICATIONS",
     "WAKE_LOCK",
     "BLUETOOTH_CONNECT",
+    "CAMERA",
     "READ_MEDIA_IMAGES",
     "READ_MEDIA_AUDIO",
-    "READ_MEDIA_VIDEO"
+    "READ_MEDIA_VIDEO",
+    "VIBRATE"
   ]
 }
