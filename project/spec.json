@@ -1,6 +1,6 @@
 {
-  "name": "مستكشف جذور الكلمات العربية",
-  "package": "com.htmltoapk.app.app",
+  "name": "Étymo · جذور الكلمات(0)",
+  "package": "com.htmltoapk.app.etymo0",
   "orientation": "auto",
   "fullscreen": true,
   "keepScreenOn": true,
@@ -14,7 +14,6 @@
     "POST_NOTIFICATIONS",
     "WAKE_LOCK",
     "BLUETOOTH_CONNECT",
-    "CAMERA",
     "READ_MEDIA_IMAGES",
     "READ_MEDIA_AUDIO",
     "READ_MEDIA_VIDEO"
