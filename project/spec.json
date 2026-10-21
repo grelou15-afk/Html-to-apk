@@ -1,6 +1,6 @@
 {
-  "name": "Associés – Dépenses et gains",
-  "package": "com.htmltoapk.app.associesdepensesetgains",
+  "name": "Étymo · جذور الكلمات",
+  "package": "com.htmltoapk.app.etymo",
   "orientation": "auto",
   "fullscreen": true,
   "keepScreenOn": true,
@@ -17,7 +17,6 @@
     "CAMERA",
     "READ_MEDIA_IMAGES",
     "READ_MEDIA_AUDIO",
-    "READ_MEDIA_VIDEO",
-    "VIBRATE"
+    "READ_MEDIA_VIDEO"
   ]
 }
