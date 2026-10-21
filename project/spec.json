@@ -1,6 +1,6 @@
 {
-  "name": "Étymo · جذور الكلمات",
-  "package": "com.htmltoapk.app.etymo",
+  "name": "مستكشف جذور الكلمات العربية",
+  "package": "com.htmltoapk.app.app",
   "orientation": "auto",
   "fullscreen": true,
   "keepScreenOn": true,
