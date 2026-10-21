@@ -1,6 +1,6 @@
 {
-  "name": "Atelier de formulation",
-  "package": "com.htmltoapk.app.atelierdeformulation",
+  "name": "Mon Marketing — Cosmétiques & École",
+  "package": "com.htmltoapk.app.monmarketingcosmetiquesecole",
   "orientation": "auto",
   "fullscreen": true,
   "keepScreenOn": true,
@@ -15,9 +15,10 @@
     "WAKE_LOCK",
     "BLUETOOTH_CONNECT",
     "CAMERA",
+    "ACCESS_FINE_LOCATION",
+    "ACCESS_COARSE_LOCATION",
     "READ_MEDIA_IMAGES",
     "READ_MEDIA_AUDIO",
-    "READ_MEDIA_VIDEO",
-    "VIBRATE"
+    "READ_MEDIA_VIDEO"
   ]
 }
