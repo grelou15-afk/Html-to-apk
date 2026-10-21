@@ -1,6 +1,6 @@
 {
-  "name": "Mon Marketing — Cosmétiques & École",
-  "package": "com.htmltoapk.app.monmarketingcosmetiquesecole",
+  "name": "Associés – Dépenses et gains",
+  "package": "com.htmltoapk.app.associesdepensesetgains",
   "orientation": "auto",
   "fullscreen": true,
   "keepScreenOn": true,
@@ -15,10 +15,9 @@
     "WAKE_LOCK",
     "BLUETOOTH_CONNECT",
     "CAMERA",
-    "ACCESS_FINE_LOCATION",
-    "ACCESS_COARSE_LOCATION",
     "READ_MEDIA_IMAGES",
     "READ_MEDIA_AUDIO",
-    "READ_MEDIA_VIDEO"
+    "READ_MEDIA_VIDEO",
+    "VIBRATE"
   ]
 }
