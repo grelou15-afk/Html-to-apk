@@ -164,7 +164,20 @@ RP[5]=[{n:"🥖 مخبز",s:[{q:"مرحبا! ماذا تريد؟",o:["أريد �
 var $=function(i){return document.getElementById(i)};
 var L=1,TH="animaux",sc=0,tot=0,cur=null,rp=0,rs=0;
 function shuf(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
-function say(t,l){try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang=l||LC[L];u.rate=.85;speechSynthesis.speak(u)}catch(e){}}
+var VO=[];function loadV(){try{VO=speechSynthesis.getVoices()||[]}catch(e){}}
+try{loadV();if(speechSynthesis.addEventListener)speechSynthesis.addEventListener("voiceschanged",loadV);else speechSynthesis.onvoiceschanged=loadV}catch(e){}
+function pickV(l){l=(l||"").toLowerCase();var b=l.split("-")[0],r=null;for(var i=0;i<VO.length;i++){var vl=(VO[i].lang||"").toLowerCase().replace("_","-");if(vl==l)return VO[i];if(!r&&vl.split("-")[0]==b)r=VO[i]}return r}
+function warnAudio(m){var d=document.getElementById("audmsg");if(!d){d=document.createElement("div");d.id="audmsg";d.style.cssText="position:fixed;left:8px;right:8px;bottom:8px;z-index:9999;background:#fff3cd;color:#664d03;border:2px solid #ffda6a;border-radius:12px;padding:10px 12px;font:14px sans-serif;text-align:center";d.onclick=function(){d.style.display="none"};document.body.appendChild(d)}d.textContent=m+" (touche pour fermer)";d.style.display="block";clearTimeout(d._t);d._t=setTimeout(function(){d.style.display="none"},7000)}
+function speakU(t,l,done){
+if(!window.speechSynthesis||!window.SpeechSynthesisUtterance){warnAudio("🔇 Ce navigateur ne gère pas la voix. Essaie Chrome, Safedge ou Safari.".replace("Safedge","Edge"));if(done)done();return}
+if(!VO.length)loadV();
+var u=new SpeechSynthesisUtterance(t);u.lang=l;u.rate=.85;u.volume=1;var v=pickV(l);if(v){u.voice=v;u.lang=v.lang}
+else if(VO.length){warnAudio("🔇 Aucune voix installée pour cette langue ("+l+"). Ajoute-la dans les réglages de synthèse vocale de l’appareil.")}
+u.onend=function(){if(done)done()};u.onerror=function(e){if(e&&e.error&&e.error!="canceled"&&e.error!="interrupted")warnAudio("🔇 Erreur audio : "+e.error);if(done)done()};
+window._u=u;
+try{speechSynthesis.cancel();if(speechSynthesis.paused)speechSynthesis.resume()}catch(e){}
+setTimeout(function(){try{speechSynthesis.speak(u);if(speechSynthesis.paused)speechSynthesis.resume()}catch(e){}},80)}
+function say(t,l){speakU(t,l||LC[L])}
 function ce(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!=null)e.textContent=h;return e}
 /* tabs */
 document.querySelectorAll("#tabs button").forEach(function(b){b.onclick=function(){document.querySelectorAll("#tabs button").forEach(function(x){x.classList.toggle("on",x===b)});["a","b","c","d","e"].forEach(function(s){$(s).classList.toggle("on",s===b.dataset.t)})}});
@@ -228,10 +241,10 @@ function sents(){return($("tx").value.match(/[^.!?\n]+[.!?]*/g)||[]).map(functio
 $("play").onclick=function(){
 var ss=sents(),r=$("reader");if(!ss.length)return;
 r.style.display="block";r.innerHTML="";var sp=ss.map(function(x){var e=ce("span","sent",x+" ");r.appendChild(e);return e});
-var my=++tok;try{speechSynthesis.cancel()}catch(e){}
+var my=++tok;
 (function go(i){if(my!=tok||i>=ss.length){sp.forEach(function(e){e.classList.remove("cur")});return}
 sp.forEach(function(e,j){e.classList.toggle("cur",j==i)});
-try{var u=new SpeechSynthesisUtterance(ss[i]);u.lang=$("vl").value;u.rate=.85;u.onend=function(){go(i+1)};u.onerror=function(){go(i+1)};speechSynthesis.speak(u)}catch(e){}})(0)};
+speakU(ss[i],$("vl").value,function(){if(my==tok)go(i+1)})})(0)};
 $("stop").onclick=function(){tok++;try{speechSynthesis.cancel()}catch(e){}document.querySelectorAll(".sent").forEach(function(e){e.classList.remove("cur")})};
 $("mkq").onclick=function(){
 var q=$("quiz");q.innerHTML="";
