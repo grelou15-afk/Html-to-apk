@@ -1,6 +1,6 @@
 {
-  "name": "langues enfants (1)",
-  "package": "com.htmltoapk.app.languesenfants1",
+  "name": "suivi comptes",
+  "package": "com.htmltoapk.app.suivicomptes",
   "orientation": "auto",
   "fullscreen": true,
   "keepScreenOn": true,
