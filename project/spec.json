@@ -1,6 +1,6 @@
 {
-  "name": "suivi comptes",
-  "package": "com.htmltoapk.app.suivicomptes",
+  "name": "Hub IA & Marketing",
+  "package": "com.htmltoapk.app.hubiamarketing",
   "orientation": "auto",
   "fullscreen": true,
   "keepScreenOn": true,
