@@ -1,6 +1,6 @@
 {
-  "name": "Hub IA & Marketing",
-  "package": "com.htmltoapk.app.hubiamarketing",
+  "name": "Mon dictionnaire de beauté",
+  "package": "com.htmltoapk.app.mondictionnairedebeaute",
   "orientation": "auto",
   "fullscreen": true,
   "keepScreenOn": true,
