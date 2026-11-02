@@ -314,16 +314,26 @@ function hy(r,s){r.querySelectorAll(s).forEach(function(e){if(e.dataset.d)return
 /* ---------- Audio : voix du navigateur (ou ton mp3) ---------- */
 function rb(){if(CURB){CURB.b.textContent=CURB.t;CURB=null}}
 function stopSay(){SP.id++;if(SP.au){SP.au.pause();SP.au=null}if(window.speechSynthesis)speechSynthesis.cancel();rb()}
+function tz(m){var d=document.createElement('div');d.textContent=m;d.style.cssText='position:fixed;left:12px;right:12px;bottom:24px;z-index:99999;background:#222;color:#fff;padding:12px 14px;border-radius:12px;font:14px/1.4 system-ui,sans-serif;text-align:center';document.body.appendChild(d);setTimeout(function(){d.remove()},7000)}
+var NOVOICE='🔇 Voix indisponible sur cet appareil. Vérifiez : Réglages Android → Synthèse vocale → moteur Google + voix française installée. Sinon ouvrez l’appli dans Chrome.';
 function say(t,seg,end){
- if(!window.speechSynthesis){seg&&seg(0,t,1);return}
- SP.id++;speechSynthesis.cancel();
- var a=t.match(/[^.!?;:]+[.!?;:»]*\s*/g)||[t],i=0,id=SP.id;
- (function nx(){if(id!=SP.id)return;if(i>=a.length){end&&end();return}
-  var u=new SpeechSynthesisUtterance(a[i]),v=speechSynthesis.getVoices().filter(function(x){return /^fr/i.test(x.lang)})[0];
-  u.lang='fr-FR';if(v)u.voice=v;u.rate=.95;seg&&seg(i,a[i],a.length);
-  u.onend=u.onerror=function(){i++;nx()};speechSynthesis.speak(u)})()}
+ if(!window.speechSynthesis||typeof SpeechSynthesisUtterance=='undefined'){seg&&seg(0,t,1);tz(NOVOICE);if(!seg&&end)end();return}
+ SP.id++;var id=SP.id,ok=0;speechSynthesis.cancel();
+ var a=t.match(/[^.!?;:]+[.!?;:»]*\s*/g)||[t],i=0;
+ setTimeout(function(){
+  if(id!=SP.id)return;
+  try{speechSynthesis.resume()}catch(e){}
+  setTimeout(function(){if(id==SP.id&&!ok){tz(NOVOICE)}},4000);
+  (function nx(){if(id!=SP.id)return;if(i>=a.length){end&&end();return}
+   var u=new SpeechSynthesisUtterance(a[i]),v=speechSynthesis.getVoices().filter(function(x){return /^fr/i.test(x.lang)})[0],fin=0;
+   u.lang='fr-FR';if(v)u.voice=v;u.rate=.95;seg&&seg(i,a[i],a.length);
+   u.onstart=function(){ok=1};
+   var nxt=function(e){if(fin)return;fin=1;if(id!=SP.id)return;
+    if(e&&e.type=='error'&&!ok){tz(NOVOICE);seg&&seg(0,a.join(''),1);end&&end();return}
+    i++;nx()};
+   u.onend=nxt;u.onerror=nxt;speechSynthesis.speak(u)})()},150)}
 function narr(k,t,seg,end){
- if(AUD[k]){SP.id++;if(window.speechSynthesis)speechSynthesis.cancel();var au=SP.au=new Audio(AUD[k]);au.onended=end;seg&&seg(0,t,1);au.play()}
+ if(AUD[k]){SP.id++;if(window.speechSynthesis)speechSynthesis.cancel();var au=SP.au=new Audio(AUD[k]);au.onended=end;seg&&seg(0,t,1);var pr=au.play();if(pr&&pr.catch)pr.catch(function(){tz('🔇 Audio bloqué : touchez de nouveau le bouton.')})}
  else say(t,seg,end)}
 
 /* ---------- Ambiance sonore générée (aucun fichier) ---------- */
