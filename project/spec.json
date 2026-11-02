@@ -1,6 +1,6 @@
 {
-  "name": "Mon dictionnaire de beauté",
-  "package": "com.htmltoapk.app.mondictionnairedebeaute",
+  "name": "Mythologies du monde",
+  "package": "com.htmltoapk.app.mythologiesdumonde",
   "orientation": "auto",
   "fullscreen": true,
   "keepScreenOn": true,
