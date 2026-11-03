@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<meta name="referrer" content="no-referrer">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Mythologies du monde</title>
@@ -314,24 +315,31 @@ function hy(r,s){r.querySelectorAll(s).forEach(function(e){if(e.dataset.d)return
 /* ---------- Audio : voix du navigateur (ou ton mp3) ---------- */
 function rb(){if(CURB){CURB.b.textContent=CURB.t;CURB=null}}
 function stopSay(){SP.id++;if(SP.au){SP.au.pause();SP.au=null}if(window.speechSynthesis)speechSynthesis.cancel();rb()}
-function tz(m){var d=document.createElement('div');d.textContent=m;d.style.cssText='position:fixed;left:12px;right:12px;bottom:24px;z-index:99999;background:#222;color:#fff;padding:12px 14px;border-radius:12px;font:14px/1.4 system-ui,sans-serif;text-align:center';document.body.appendChild(d);setTimeout(function(){d.remove()},7000)}
-var NOVOICE='🔇 Voix indisponible. Vérifiez votre connexion internet, ou installez la voix française : Réglages Android → Synthèse vocale → moteur Google.';
+function tz(m,link){var o=document.getElementById('tzbox');if(o)o.remove();var d=document.createElement('div');d.id='tzbox';d.textContent=m;d.style.cssText='position:fixed;left:12px;right:12px;bottom:24px;z-index:99999;background:#222;color:#fff;padding:12px 14px;border-radius:12px;font:14px/1.4 system-ui,sans-serif;text-align:center';
+ if(link){var a=document.createElement('a');a.textContent='⚙️ Ouvrir les réglages de la voix';a.href='intent:#Intent;action=com.android.settings.TTS_SETTINGS;end';a.style.cssText='display:block;margin-top:8px;color:#ffd48a;font-weight:700';d.appendChild(a)}
+ document.body.appendChild(d);clearTimeout(tz.t);tz.t=setTimeout(function(){d.remove()},10000)}
+var NOVOICE='🔇 Voix française introuvable. Installez-la : Réglages → Synthèse vocale → moteur Google → Français (France). Puis rouvrez l’appli.';
+var FRV=null;
+function pickFr(){var l=window.speechSynthesis?speechSynthesis.getVoices():[],f=l.filter(function(x){return /^fr/i.test(x.lang)});
+ FRV=f.filter(function(x){return /^fr[-_]FR/i.test(x.lang)&&x.localService})[0]||f.filter(function(x){return /^fr[-_]FR/i.test(x.lang)})[0]||f[0]||null;return FRV}
+if(window.speechSynthesis){try{pickFr();speechSynthesis.onvoiceschanged=pickFr}catch(e){}}
 var TA=null,SIL='data:audio/wav;base64,UklGRrQBAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YZABAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA';
 /* Voix de secours (en ligne) : un seul élément <audio> réutilisé, phrases de 170 car. max */
 function chunks(t){var a=t.match(/[^.!?;:]+[.!?;:»]*\s*/g)||[t],o=[];
  a.forEach(function(s){s=s.trim();while(s.length>170){var j=s.lastIndexOf(' ',170);if(j<60)j=170;o.push(s.slice(0,j));s=s.slice(j).trim()}if(s)o.push(s)});
  return o.length?o:[t]}
+var TTS=['https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=fr&q=','https://translate.googleapis.com/translate_tts?ie=UTF-8&client=gtx&tl=fr&q='];
 function webSay(t,seg,end,id){
- var a=chunks(t),i=0,au=TA||(TA=new Audio());SP.au=au;
- function fail(m){if(id!=SP.id)return;seg&&seg(0,t,1);tz(m||NOVOICE);if(!seg&&end)end()}
+ var a=chunks(t),i=0,e=0,au=TA||(TA=new Audio());SP.au=au;
+ function fail(m){if(id!=SP.id)return;seg&&seg(0,t,1);tz(m||NOVOICE,!m);if(!seg&&end)end()}
  (function nx(){
   if(id!=SP.id)return;
   if(i>=a.length){end&&end();return}
   seg&&seg(i,a[i],a.length);
-  au.onended=function(){if(id!=SP.id)return;i++;nx()};
-  au.onerror=function(){if(id!=SP.id)return;if(i==0){fail();return}i++;nx()};
-  au.src='https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=fr&q='+encodeURIComponent(a[i]);
-  var p=au.play();if(p&&p.catch)p.catch(function(){fail('🔇 Audio bloqué : touchez de nouveau le bouton.')})})()}
+  au.onended=function(){if(id!=SP.id)return;i++;e=0;nx()};
+  au.onerror=function(){if(id!=SP.id)return;if(e+1<TTS.length){e++;nx();return}if(i==0){fail();return}i++;e=0;nx()};
+  au.src=TTS[e]+encodeURIComponent(a[i]);
+  var p=au.play();if(p&&p.catch)p.catch(function(er){if(id!=SP.id)return;if(er&&er.name=='NotAllowedError')fail('🔇 Audio bloqué : touchez de nouveau le bouton.')})})()}
 function say(t,seg,end){
  var id=++SP.id,ok=0;
  /* « déverrouille » la lecture audio pendant le toucher de l'utilisateur */
@@ -343,13 +351,13 @@ function say(t,seg,end){
  setTimeout(function(){
   if(id!=SP.id)return;
   try{speechSynthesis.resume()}catch(e){}
-  setTimeout(function(){if(id==SP.id&&!ok)web()},2500);
+  setTimeout(function(){if(id==SP.id&&!ok)web()},5000);
   (function nx(){if(id!=SP.id)return;if(i>=a.length){end&&end();return}
-   var u=new SpeechSynthesisUtterance(a[i]),v=speechSynthesis.getVoices().filter(function(x){return /^fr/i.test(x.lang)})[0],fin=0;
+   var u=new SpeechSynthesisUtterance(a[i]),v=FRV||pickFr(),fin=0;
    u.lang='fr-FR';if(v)u.voice=v;u.rate=.95;seg&&seg(i,a[i],a.length);
    u.onstart=function(){ok=1};
    var nxt=function(e){if(fin)return;fin=1;if(id!=SP.id)return;
-    if(e&&e.type=='error'&&!ok){web();return}
+    if(e&&e.type=='error'&&e.error!='interrupted'&&e.error!='canceled'&&!ok){web();return}
     i++;nx()};
    u.onend=nxt;u.onerror=nxt;speechSynthesis.speak(u)})()},150)}
 function narr(k,t,seg,end){

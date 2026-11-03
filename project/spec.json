@@ -4,7 +4,7 @@
   "orientation": "auto",
   "fullscreen": true,
   "keepScreenOn": true,
-  "versionName": "1.0.3",
+  "versionName": "1.0.2",
   "versionCode": 1,
   "permissions": [
     "INTERNET",
