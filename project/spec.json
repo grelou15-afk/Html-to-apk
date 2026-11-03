@@ -1,10 +1,10 @@
 {
-  "name": "Mythologies du monde",
-  "package": "com.htmltoapk.app.mythologiesdumonde",
+  "name": "Rires & Énigmes",
+  "package": "com.htmltoapk.app.riresenigmes",
   "orientation": "auto",
   "fullscreen": true,
   "keepScreenOn": true,
-  "versionName": "1.0.2",
+  "versionName": "1.0.0",
   "versionCode": 1,
   "permissions": [
     "INTERNET",
