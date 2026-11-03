@@ -1,6 +1,6 @@
 {
-  "name": "Mythologies du monde",
-  "package": "com.htmltoapk.app.mythologiesdumonde",
+  "name": "HtmlToApk",
+  "package": "com.htmltoapk.app.htmltoapk",
   "orientation": "auto",
   "fullscreen": true,
   "keepScreenOn": true,
