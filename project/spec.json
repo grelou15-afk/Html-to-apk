@@ -1,6 +1,6 @@
 {
-  "name": "Rires & Énigmes",
-  "package": "com.htmltoapk.app.riresenigmes",
+  "name": "Armoire Ecole",
+  "package": "com.htmltoapk.app.armoireecole",
   "orientation": "auto",
   "fullscreen": true,
   "keepScreenOn": true,
