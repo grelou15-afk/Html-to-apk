@@ -1,6 +1,6 @@
 {
-  "name": "HtmlToApk (1)",
-  "package": "com.htmltoapk.app.htmltoapk1",
+  "name": "Armoire Ecole",
+  "package": "com.htmltoapk.app.armoireecole",
   "orientation": "auto",
   "fullscreen": true,
   "keepScreenOn": true,
