@@ -1,6 +1,6 @@
 {
-  "name": "fit maison pro 3 android",
-  "package": "com.htmltoapk.app.fitmaisonpro3android",
+  "name": "Lecteur Multimédia",
+  "package": "com.htmltoapk.app.lecteurmultimedia",
   "orientation": "auto",
   "fullscreen": true,
   "keepScreenOn": true,
