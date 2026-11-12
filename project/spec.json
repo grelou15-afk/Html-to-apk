@@ -1,6 +1,6 @@
 {
-  "name": "Atelier de formulation",
-  "package": "com.htmltoapk.app.atelierdeformulation",
+  "name": "Vie de Kouzina",
+  "package": "com.htmltoapk.app.viedekouzina",
   "orientation": "auto",
   "fullscreen": true,
   "keepScreenOn": true,
